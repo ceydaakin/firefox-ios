@@ -2100,6 +2100,7 @@ extension BrowserViewController: MenuActionable {
     func showSettings(shouldScrollToSiri: Bool = false) {
         guard let modalDelegate = modalDelegate else { return }
 
+        urlBar.dismiss()
         let settingsViewController = SettingsViewController(
             searchEngineManager: searchEngineManager,
             authenticationManager: authenticationManager,
