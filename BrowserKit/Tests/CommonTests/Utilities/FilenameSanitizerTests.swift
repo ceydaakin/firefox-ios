@@ -69,6 +69,22 @@ final class FilenameSanitizerTests: XCTestCase {
         XCTAssertTrue(FilenameSanitizer.isContained(dir.appendingPathComponent("a.pdf"), in: dir))
     }
 
+    func testIsContained_notYetCreatedFileInPrivateSymlinkedDirectory_isTrue() throws {
+        // On device the temporary directory is under `/private/var`, where `/var` is a symlink to `/private/var`.
+        let dir = URL(fileURLWithPath: "/private/var/tmp")
+        try XCTSkipUnless(FileManager.default.fileExists(atPath: dir.path))
+        let file = dir.appendingPathComponent("\(UUID().uuidString).pdf")
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: file.path))
+        XCTAssertTrue(FilenameSanitizer.isContained(file, in: dir))
+    }
+
+    func testIsContained_traversalOutOfPrivateSymlinkedDirectory_isFalse() {
+        let dir = URL(fileURLWithPath: "/private/var/tmp")
+        XCTAssertFalse(FilenameSanitizer.isContained(dir.appendingPathComponent("../a.pdf"), in: dir))
+        XCTAssertFalse(FilenameSanitizer.isContained(dir, in: dir))
+    }
+
     func testIsContained_traversalOutOfDirectory_isFalse() {
         let dir = URL(fileURLWithPath: "/tmp/stage")
         XCTAssertFalse(FilenameSanitizer.isContained(dir.appendingPathComponent("../a.pdf"), in: dir))

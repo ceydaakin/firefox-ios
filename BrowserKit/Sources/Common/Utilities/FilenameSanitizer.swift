@@ -26,8 +26,10 @@ public enum FilenameSanitizer {
 
     /// Whether `fileURL` resolves to a location strictly inside `directory`.
     public static func isContained(_ fileURL: URL, in directory: URL) -> Bool {
-        let directoryComponents = directory.standardizedFileURL.pathComponents
-        let fileComponents = fileURL.standardizedFileURL.pathComponents
+        // `standardizedFileURL` drops a leading `/private` only for paths that exist, so a file that is
+        // not created yet would never match its own directory on device.
+        let directoryComponents = directory.standardized.pathComponents
+        let fileComponents = fileURL.standardized.pathComponents
         return fileComponents.count > directoryComponents.count
             && Array(fileComponents.prefix(directoryComponents.count)) == directoryComponents
     }
