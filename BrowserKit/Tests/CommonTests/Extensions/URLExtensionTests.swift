@@ -404,6 +404,13 @@ final class URLExtensionTests: XCTestCase {
         XCTAssertEqual(URL(string: readerModeURL)!.decodeReaderModeURL, url)
     }
 
+    func testDecodeReaderModeURLWhenQueryParameterWithoutValueThenGivesCorrectURL() {
+        let readerModeURL = "about:reader?url=https%3A%2F%2Fen%2Ewikipedia%2Eorg%2Fwiki%2FFirefox%3Ffoo&uuidkey=AAAAA"
+        let url = URL(string: "https://en.wikipedia.org/wiki/Firefox?foo")
+
+        XCTAssertEqual(URL(string: readerModeURL)!.decodeReaderModeURL, url)
+    }
+
     func testDecodeReaderModeURLGivenNotAReaderModeURLThenNil() {
         let url = "http://google.com"
         XCTAssertNil(URL(string: url)!.decodeReaderModeURL)
@@ -473,6 +480,12 @@ final class URLExtensionTests: XCTestCase {
         let url = URL(string: "http://localhost:1234")!
         let safeUrl = url.safeEncodedUrl
         XCTAssertNotNil(safeUrl)
+    }
+
+    func testSafeEncodedUrlGivenQueryItemWithoutValue() {
+        let url = URL(string: "https://example.com/page?foo&key=%3Cb%3E")!
+        let safeUrl = url.safeEncodedUrl
+        XCTAssertEqual(safeUrl?.absoluteString, "https://example.com/page?foo&key=%26lt;b%26gt;")
     }
 
     func testSafeEncodedUrlGivenEmptyScheme() {

@@ -395,8 +395,13 @@ extension URL {
             var safeQueryItems: [URLQueryItem] = []
 
             for item in queryItems {
+                guard let value = item.value else {
+                    safeQueryItems.append(item)
+                    continue
+                }
+
                 // percent-encoded characters
-                guard let decodedValue = item.value?.removingPercentEncoding else {
+                guard let decodedValue = value.removingPercentEncoding else {
                     return nil
                 }
 
